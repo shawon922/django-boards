@@ -1,13 +1,13 @@
 from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+from .forms import SignUpForm
 
 
 def signup(request):
     ''' 
-    ' UserCreationForm imported in top
+    ' SignUpForm imported in top
     '''
-    form = UserCreationForm(request.POST or None)
+    form = SignUpForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
         user = form.save()
@@ -21,11 +21,3 @@ def signup(request):
         'form': form,
     }
     return render(request, 'accounts/signup.html', context)
-
-
-def signin(request):
-    return render(request, 'accounts/signin.html')
-
-
-def signout(request):
-    pass
