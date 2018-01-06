@@ -26,19 +26,25 @@
             </tr>
         </thead>
         <tbody>
-            {% for topic in board.topics.all %}
+            {% for topic in topics %}
             <tr>
                 <td>
-                    <a href="#">
+                    <a href="{% url 'boards:topic_posts' board.pk topic.pk %}">
                         {{ topic.subject }}
                     </a>
                 </td>
                 <td>{{ topic.starter.username }}</td>
-                <td class="align-middle">0</td>
-                <td class="align-middle">0</td>
+                <td class="align-middle">
+                    {{ topic.get_replies }}
+                </td>
+                <td class="align-middle">
+                    {{ topic.views }}
+                </td>
                 <td>{{ topic.last_updated|timesince }} ago</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    {% include 'includes/pagination.html' %}
 {% endblock %}

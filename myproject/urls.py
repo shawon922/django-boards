@@ -33,7 +33,7 @@ urlpatterns = [
         name='password_change'),
     url(r'^settings/password/done/$', auth_views.PasswordChangeDoneView.as_view(template_name='accounts/password_change_done.html'),
         name='password_change_done'),
-    url(r'^$', boards_views.home, name='home'),
+    url(r'^$', boards_views.BoardListView.as_view(), name='home'),
     url(r'^boards/', include('boards.urls', namespace='boards')),
     url(r'^admin/', admin.site.urls),
 ]
