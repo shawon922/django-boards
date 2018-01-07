@@ -27,21 +27,35 @@
         </thead>
         <tbody>
             {% for topic in topics %}
-            <tr>
-                <td>
-                    <a href="{% url 'boards:topic_posts' board.pk topic.pk %}">
-                        {{ topic.subject }}
-                    </a>
-                </td>
-                <td>{{ topic.starter.username }}</td>
-                <td class="align-middle">
-                    {{ topic.get_replies }}
-                </td>
-                <td class="align-middle">
-                    {{ topic.views }}
-                </td>
-                <td>{{ topic.last_updated|timesince }} ago</td>
-            </tr>
+                 {% url 'boards:topic_posts' board.pk topic.pk as topic_url %}
+                <tr>
+                    <td>
+                        <p class="mb-0">
+                            <a href="{{ topic_url }}">
+                                {{ topic.subject }}
+                            </a>
+                        </p>
+                        
+                        <small class="text-muted">
+                            Pages: 
+                            {% for i in topic.get_page_range %}
+                                <a href="{{ topic_url }}?page={{ i }}">{{ i }}</a>
+                            {% endfor %} 
+                            
+                            {% if topic.has_many_pages %} 
+                                ...<a href="{{ topic_url }}?page={{ topic.get_page_count }}">Last Page</a>
+                            {% endif %}
+                        </small>
+                    </td>
+                    <td>{{ topic.starter.username }}</td>
+                    <td class="align-middle">
+                        {{ topic.get_replies }}
+                    </td>
+                    <td class="align-middle">
+                        {{ topic.views }}
+                    </td>
+                    <td>{{ topic.last_updated|timesince }} ago</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
