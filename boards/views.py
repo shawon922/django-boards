@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic import View, UpdateView, ListView
 from django.utils.decorators import method_decorator
+from django.urls import reverse
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
@@ -105,7 +106,7 @@ def new_topic(request, pk=None):
 class PostListView(ListView):
     model = Post
     context_object_name = 'posts'
-    paginate_by = 2
+    paginate_by = 20
     template_name = 'boards/topic_posts.html'
 
     def get_context_data(self, **kwargs):
@@ -116,12 +117,13 @@ class PostListView(ListView):
 
     def get_queryset(self):
         self.topic = get_object_or_404(Topic, board__pk=self.kwargs.get('pk'), pk=self.kwargs.get('topic_pk'))
-        queryset = self.topic.posts.order_by('-created_at')
+        queryset = self.topic.posts.order_by('created_at')
         return queryset
 
 @login_required
 def reply_topic(request, pk, topic_pk):
     topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
+    print(topic.get_page_count())
     form = PostForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
@@ -129,6 +131,18 @@ def reply_topic(request, pk, topic_pk):
         post.topic = topic
         post.created_by = request.user
         post.save()
+
+        topic.last_updated = timezone.now()
+        topic.save()
+
+        topic_url = reverse('boards:topic_posts', kwargs={ 'pk': pk, 'topic_pk': topic_pk })
+        topic_post_url = '{url}?page={page}#{id}'.format(
+            url=topic_url,
+            page=topic.get_page_count(),
+            id=post.pk,
+        )
+
+        return redirect(topic_post_url)
 
     context = {
         'topic': topic,

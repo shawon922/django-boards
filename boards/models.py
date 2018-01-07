@@ -43,6 +43,9 @@ class Topic(models.Model):
             return range(1, 5)
         return range(1, count+1)
 
+    def get_last_ten_post(self):
+        return self.posts.all()[:10]
+
     def get_replies(self):
         return self.posts.count() - 1
 
